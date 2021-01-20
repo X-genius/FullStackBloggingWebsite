@@ -1,0 +1,20 @@
+//import scss file from abstract
+@import "scss/abstract/variables";
+@import "scss/abstract/mixin";
+@import "scss/abstract/extends";
+
+//import scss file from base
+@import "scss/base/reset";
+ 
+//import scss file from utils
+@import "scss/utils/utils";
+
+//import scss file from components
+@import "scss/components/navbar";
+@import "scss/components/bgImages";
+@import "scss/components/account";
+@import "scss/components/notFound";
+
+
+//import scss file from layout
+@import "scss/layout/grid";

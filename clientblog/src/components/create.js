@@ -5,56 +5,127 @@ import 'react-quill/dist/quill.snow.css';
 const Create = () => {
     const [currentImage , setCurrentImage] = useState('choose Image');
 
+    const[imagePreview , setImagePreview] = useState('');
+
     const fileHandle = (e) =>{
          setCurrentImage(e.target.files[0].name);
+         setState({
+             ...state, [e.target.name] : e.target.files[0]
+         });
+         const reader = new FileReader();
+         reader.onloadend = () =>
+         {
+             setImagePreview(reader.result);
+         }
+
+         reader.readAsDataURL(e.target.files[0]);
     }
 
     const [state , setState] = useState({
-        title : ''
+        title : '',
+        description : '',
+        image : ''
     })
 
-    const handleInputs = (e) => {
+    const handleDescription = (e) =>{
+        setState({
+            ...state, [e.target.name] : e.target.value
+        })
+
+    }
+
+    const [slug , setSlug] = useState('');
+
+    const [slugBtn , setSlugBtn] = useState(false);
+
+    const slugHandle = (e) => {
+        setSlugBtn(true);
+        setSlug(e.target.value);
+    }
+
+    const handleURL = (e) => {
+        e.preventDefault();
+        setSlug(slug.trim().split(' ').join('-'));
+    }
+
+    const handleInput = (e) => {
         setState({...state , [e.target.name] : e.target.value});
+        const createSlug = e.target.value.trim().split(' ').join('-');
+        setSlug(createSlug);
     }
 
     const [value, setValue] = useState('');
 
-    return <div className = "create mt-100">
+    const createPost = (e) => {
+        e.preventDefault();
+        console.log(state);
+    }
+
+    return <div className = "create mt-100 ">
           <Helmet>
                  <title>Create new post</title>
                  <meta name = "description" content = "Create a new post"/>
           </Helmet>
 
           <div className = "container">
+          <form onSubmit = {createPost}>
               <div className = "row">
-                  <div className = "col-6">
+                  <div className = "col-6 p-15">
                       <div className = "card">
                           <h3 className = "card__h3">Create a new post</h3>
-                          <form>
+                          
                               <div className = "group">
                                   <label htmlFor = "title">Post Title</label>
                                   <input type = "text" name = "title" id = "title" value = {state.title} 
-                                  onChange = {handleInputs} className = "group__control" placeholder = "Post title..."/>  
+                                  onChange = {handleInput} className = "group__control" placeholder = "Post title..."/>  
                               </div>
 
                               <div className = "group">
                                   <label htmlFor = "image" className = "image__label">{currentImage}</label>
-                                  <input type = "file" name = "picture" id = "image" onChange = {fileHandle}/>  
+                                  <input type = "file" name = "image" id = "image" onChange = {fileHandle}/>  
                               </div>
 
                               <div className = "group">
-                                  <label htmlFor = "body">
-                                  <ReactQuill theme="snow" value={value} onChange={setValue}/>
-                                  </label>
+                                  <label htmlFor = "body">Post Body</label>
+                                  <ReactQuill theme="snow" value={value} onChange={setValue} id = "body" placeholder = "Post body..."/>
                               </div>
 
                               <div className = "group">
                                   <input type = "submit" value = "Create Post" className = "btn btn-default btn-block"/>  
                               </div>
-                          </form>
+                          
                       </div>
                   </div>
+
+                  <div className = "col-6 p-15">
+                        <div className = "card">
+                            <div className = "group">
+                                <label htmlFor = "slug">Post URL</label>
+                                <input type = "text" name = "slug" id = "slug"
+                                 value = {slug} onChange = {slugHandle} className = "group__control" placeholder = "Post URL..."/>
+                            </div>
+
+                            <div className = "group">
+                                {slugBtn ? (<button className = "btn btn-default" onClick = {handleURL}>Update Slug</button>) : ('')}
+                            </div>
+
+                            <div className = "group">
+                                <div className = "imagePreview">
+                                    {imagePreview ? <img src = {imagePreview} alt = "imagePreview"/> : ''}
+                                </div>
+
+                                <div className = "group">
+                                    <label htmlFor = "description">Meta Description</label>
+                                    <textarea name = "description" id = "description" cols = "30" rows = "10" className = "group__control"
+                                    placeholder = "Meta description..." maxLength = "150" defaultValue = {state.description}
+                                    onChange = {handleDescription}></textarea>
+                                    <p className = "length">{state.description ? state.description.length : 0}</p>
+                                </div>
+                            </div>
+                        </div>
+                  </div>
               </div>
+        </form>
           </div>
     </div>
 }
